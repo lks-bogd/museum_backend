@@ -1,0 +1,164 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Exhibit {
+  id        String @id @default(uuid())
+
+  name String @unique
+  year Int
+  description String?
+
+  imageUrl String? @map("image_url") // Ссылка на изображение
+  modelUrl String? @map("model_url") // Ссылка на 3d модель
+
+  material String
+  color String
+
+  size Float
+
+  categoryId String @map("category_id")
+  category ExhibitCategory @relation(fields: [categoryId], references: [id])
+
+  eraId String @map("era_id")
+  era ComputingEra @relation(fields: [eraId], references: [id])
+
+  hallId String @map("room_id")
+  hall Hall @relation(fields: [hallId], references: [id])
+
+  manufactorerId String @map("manufactorer_id")
+  manufactorer Manufactorer @relation(fields: [manufactorerId], references: [id])
+
+  position ExhibitPosition?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model ExhibitPosition {
+  id        String @id @default(uuid())
+
+  x Float 
+  y Float
+  z Float
+
+  exhibitId String @map("exhibit_id") @unique
+  exhibit Exhibit @relation(fields: [exhibitId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model ExhibitCategory {
+  id        String @id @default(uuid())
+
+  name String @unique
+  description String?
+
+  exhibits Exhibit[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model ComputingEra {
+  id        String @id @default(uuid())
+
+  name String @unique
+  description String?
+
+  startYear Int @map("start_year")
+  endYear Int @map("end_year")
+
+  exhibits Exhibit[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model Manufactorer {
+  id        String @id @default(uuid())
+
+  name String
+  country String
+
+  exhibits Exhibit[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model Hall {
+  id        String @id @default(uuid())
+
+  name String @unique
+  description String?
+  category String
+
+  imageUrl String? @map("image_url")
+  modelUrl String? @map("model_url")
+
+  exhitits Exhibit[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model User {
+  id        String @id @default(uuid())
+
+  email String @unique
+
+  feedbacks Feedback[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model Feedback {
+  id        String @id @default(uuid())
+
+  date DateTime
+  title String
+  content String
+
+  userId String @map("user_id")
+  user User @relation(fields: [userId], references: [id])
+
+  statusId String @map("status_id")
+  status Status @relation(fields: [statusId], references: [id])
+
+  attachment Attachment?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model Status {
+  id        String @id @default(uuid())
+
+  name String
+
+  feedbacks Feedback[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model Attachment {
+  id        String @id @default(uuid())
+
+  filePath String @map("file_path")
+
+  feedbackId String @map("feedback_id") @unique
+  feedback Feedback @relation(fields: [feedbackId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}

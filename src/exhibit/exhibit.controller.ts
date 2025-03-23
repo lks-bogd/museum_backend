@@ -1,0 +1,152 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
+import { ExhibitService } from './exhibit.service';
+import { CreateExhibitDto } from './dto/create-exhibit.dto';
+import { UpdateExhibitDto } from './dto/update-exhibit.dto';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiQuery,
+  ApiBody,
+} from '@nestjs/swagger';
+import { ExhibitDto } from './dto/exhibit.dto';
+
+@ApiTags('Экспонаты')
+@Controller('exhibit')
+export class ExhibitController {
+  constructor(private readonly exhibitService: ExhibitService) {}
+
+  @Post()
+  @ApiOperation({ summary: 'Создать новый экспонат' })
+  @ApiBody({ type: CreateExhibitDto })
+  @ApiResponse({ status: 201, description: 'Экспонат успешно создан' })
+  async create(@Body() createExhibitDto: CreateExhibitDto) {
+    return await this.exhibitService.create(createExhibitDto);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Получить все экспонаты' })
+  @ApiQuery({ name: 'skip', required: false, example: 0 })
+  @ApiQuery({ name: 'take', required: false, example: 10 })
+  @ApiResponse({
+    status: 200,
+    description: 'Список экспонатов',
+    type: [ExhibitDto],
+  })
+  async findAll(@Query('skip') skip: number, @Query('take') take: number) {
+    return await this.exhibitService.findAll(skip, take);
+  }
+
+  @Get('/by-era')
+  @ApiOperation({ summary: 'Получить все экспонаты по эпохе' })
+  @ApiQuery({
+    name: 'eraId',
+    required: true,
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Список экспонатов',
+    type: [ExhibitDto],
+  })
+  async findByEra(@Query('eraId') eraId: string) {
+    return await this.exhibitService.findByEra(eraId);
+  }
+
+  @Get('/by-category')
+  @ApiOperation({ summary: 'Получить все экспонаты по категории' })
+  @ApiQuery({
+    name: 'categoryId',
+    required: true,
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Список экспонатов',
+    type: [ExhibitDto],
+  })
+  async findByCategory(@Query('categoryId') categoryId: string) {
+    return await this.exhibitService.findByCategory(categoryId);
+  }
+
+  @Get('/by-hall')
+  @ApiOperation({ summary: 'Получить все экспонаты по залу' })
+  @ApiQuery({
+    name: 'hallId',
+    required: true,
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Список экспонатов',
+    type: [ExhibitDto],
+  })
+  async findByHall(@Query('hallId') hallId: string) {
+    return await this.exhibitService.findByHall(hallId);
+  }
+
+  @Get('/by-manufactorer')
+  @ApiOperation({ summary: 'Получить все экспонаты по производителю' })
+  @ApiQuery({
+    name: 'manufactorerId',
+    required: true,
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Список экспонатов',
+    type: [ExhibitDto],
+  })
+  async findByManufactorer(@Query('manufactorerId') manufactorerId: string) {
+    return await this.exhibitService.findByManufactorer(manufactorerId);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Получить экспонат по ID' })
+  @ApiParam({
+    name: 'id',
+    description: 'UUID экспоната',
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
+  @ApiResponse({ status: 200, type: ExhibitDto })
+  @ApiResponse({ status: 404, description: 'Экспонат не найден' })
+  async findOne(@Param('id') id: string) {
+    return await this.exhibitService.findOne(id);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Обновить экспонат по ID' })
+  @ApiParam({
+    name: 'id',
+    description: 'UUID экспоната',
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
+  @ApiResponse({ status: 200, type: ExhibitDto })
+  @ApiResponse({ status: 404, description: 'Экспонат не найден' })
+  update(@Param('id') id: string, @Body() dto: UpdateExhibitDto) {
+    return this.exhibitService.update(id, dto);
+  }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Удалить экспонат по ID' })
+  @ApiParam({
+    name: 'id',
+    description: 'UUID экспоната',
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
+  @ApiResponse({ status: 200, type: ExhibitDto })
+  @ApiResponse({ status: 404, description: 'Экспонат не найден' })
+  remove(@Param('id') id: string) {
+    return this.exhibitService.delete(id);
+  }
+}
