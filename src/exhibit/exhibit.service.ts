@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateExhibitDto } from './dto/create-exhibit.dto';
 import { UpdateExhibitDto } from './dto/update-exhibit.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -14,8 +14,6 @@ export class ExhibitService {
       name: dto.name,
       year: dto.year,
       description: dto.description,
-      imageUrl: dto.imageUrl,
-      modelUrl: dto.modelUrl,
       material: dto.material,
       color: dto.color,
       size: dto.size,
@@ -39,6 +37,30 @@ export class ExhibitService {
 
     return await this.findOne(exhibit.id);
   };
+
+  attachModelToExhibit = async(exhibitId: string, filePath: string) =>{
+    if (!exhibitId) {
+      throw new BadRequestException('Нужно передать ID экспоната')
+    }
+    return await this.prisma.exhibit.update({
+      where: { id: exhibitId},
+      data: {
+        modelUrl: filePath
+      }
+    })
+  }
+
+  attachImageToExhibit = async(exhibitId: string, filePath: string) =>{
+    if (!exhibitId) {
+      throw new BadRequestException('Нужно передать ID экспоната')
+    }
+    return await this.prisma.exhibit.update({
+      where: { id: exhibitId},
+      data: {
+        imageUrl: filePath
+      }
+    })
+  }
 
   private addPosition = async (
     dto: CreateExhibitPositionDto,

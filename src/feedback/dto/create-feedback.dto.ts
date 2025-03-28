@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsDate, IsString } from 'class-validator';
 
 export class CreateFeedbackDto {
   @ApiProperty({
@@ -6,6 +7,7 @@ export class CreateFeedbackDto {
     description: 'Дата feedback',
     required: true,
   })
+  @IsDate()
   date: Date;
 
   @ApiProperty({
@@ -13,6 +15,7 @@ export class CreateFeedbackDto {
     description: '',
     required: true,
   })
+  @IsString()
   title: string;
 
   @ApiProperty({
@@ -20,6 +23,7 @@ export class CreateFeedbackDto {
     description: '',
     required: true,
   })
+  @IsString()
   content: string;
 
   @ApiProperty({
@@ -27,6 +31,7 @@ export class CreateFeedbackDto {
     description: 'например: 550e8400-e29b-41d4-a716-446655440000',
     required: true,
   })
+  @IsString()
   userId: string;
 
   @ApiProperty({
@@ -34,5 +39,6 @@ export class CreateFeedbackDto {
     description: 'например: 550e8400-e29b-41d4-a716-446655440000',
     required: true,
   })
+  @IsString()
   statusId: string;
 }

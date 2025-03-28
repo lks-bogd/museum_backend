@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { ExhibitService } from './exhibit.service';
 import { CreateExhibitDto } from './dto/create-exhibit.dto';
@@ -20,6 +22,9 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { ExhibitDto } from './dto/exhibit.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {diskStorage} from 'multer'
+import { extname } from 'path';
 
 @ApiTags('Экспонаты')
 @Controller('exhibit')
@@ -32,6 +37,32 @@ export class ExhibitController {
   @ApiResponse({ status: 201, description: 'Экспонат успешно создан' })
   async create(@Body() createExhibitDto: CreateExhibitDto) {
     return await this.exhibitService.create(createExhibitDto);
+  }
+
+  @Post('/upload-model')
+  @ApiOperation({ summary: 'Загрузить модель экспоната' })
+  @UseInterceptors(FileInterceptor('file', {storage: diskStorage({
+    destination: './uploads/exhibits/models',
+    filename: (req, file, callback) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      callback(null, file.fieldname + '-' + uniqueSuffix + extname(file.originalname))
+    }
+  })}))
+  async uploadModel(@UploadedFile() file: Express.Multer.File, @Query('exhibitId') exhibitId: string) {
+    return await this.exhibitService.attachModelToExhibit(exhibitId, file.path)
+  }
+
+  @Post('/upload-image')
+  @ApiOperation({ summary: 'Загрузить картинку экспоната' })
+  @UseInterceptors(FileInterceptor('file', {storage: diskStorage({
+    destination: './uploads/exhibits/images',
+    filename: (req, file, callback) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      callback(null, file.fieldname + '-' + uniqueSuffix + extname(file.originalname))
+    }
+  })}))
+  async uploadImage(@UploadedFile() file: Express.Multer.File, @Query('exhibitId') exhibitId: string) {
+    return await this.exhibitService.attachImageToExhibit(exhibitId, file.path)
   }
 
   @Get()

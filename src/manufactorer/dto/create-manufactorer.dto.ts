@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
 
 export class CreateManufactorerDto {
   @ApiProperty({
@@ -6,6 +7,7 @@ export class CreateManufactorerDto {
     description: 'Название производителя',
     required: true,
   })
+  @IsString()
   name: string;
 
   @ApiProperty({
@@ -13,5 +15,6 @@ export class CreateManufactorerDto {
     description: 'Страна производителя',
     required: true,
   })
+  @IsString()
   country: string;
 }
