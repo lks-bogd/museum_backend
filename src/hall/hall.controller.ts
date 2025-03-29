@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { HallService } from './hall.service';
 import { CreateHallDto } from './dto/create-hall.dto';
@@ -21,6 +23,9 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { HallDto } from './dto/hall.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @ApiTags('Залы')
 @Controller('hall')
@@ -33,6 +38,32 @@ export class HallController {
   @ApiResponse({ status: 201, description: 'Зал успешно создан' })
   async create(@Body() createHallDto: CreateHallDto) {
     return await this.hallService.create(createHallDto);
+  }
+
+  @Post('/upload-model')
+  @ApiOperation({ summary: 'Загрузить модель зала' })
+  @UseInterceptors(FileInterceptor('file', {storage: diskStorage({
+    destination: './uploads/halls/models',
+    filename: (req, file, callback) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      callback(null, file.fieldname + '-' + uniqueSuffix + extname(file.originalname))
+    }
+  })}))
+  async uploadModel(@UploadedFile() file: Express.Multer.File, @Query('hallId') hallId: string) {
+    return await this.hallService.attachModelToHall(hallId, file.path)
+  }
+
+  @Post('/upload-image')
+  @ApiOperation({ summary: 'Загрузить картинку зала' })
+  @UseInterceptors(FileInterceptor('file', {storage: diskStorage({
+    destination: './uploads/halls/images',
+    filename: (req, file, callback) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      callback(null, file.fieldname + '-' + uniqueSuffix + extname(file.originalname))
+    }
+  })}))
+  async uploadImage(@UploadedFile() file: Express.Multer.File, @Query('hallId') hallId: string) {
+    return await this.hallService.attachImageToHall(hallId, file.path)
   }
 
   @Get()

@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsInt, IsNumber, IsString } from 'class-validator';
 
 export class CreateExhibitDto {
   @ApiProperty({
@@ -6,6 +7,7 @@ export class CreateExhibitDto {
     description: '',
     required: true,
   })
+  @IsString()
   name: string;
 
   @ApiProperty({
@@ -13,6 +15,7 @@ export class CreateExhibitDto {
     description: '',
     required: true,
   })
+  @IsInt()
   year: number;
 
   @ApiProperty({
@@ -20,27 +23,15 @@ export class CreateExhibitDto {
     description: '',
     required: false,
   })
+  @IsString()
   description?: string;
-
-  @ApiProperty({
-    example: 'Ссылка на картинку',
-    description: '',
-    required: false,
-  })
-  imageUrl?: string;
-
-  @ApiProperty({
-    example: 'Ссылка на модель',
-    description: '',
-    required: false,
-  })
-  modelUrl?: string;
 
   @ApiProperty({
     example: 'Какой-то материал',
     description: '',
     required: true,
   })
+  @IsString()
   material: string;
 
   @ApiProperty({
@@ -48,20 +39,23 @@ export class CreateExhibitDto {
     description: '',
     required: true,
   })
+  @IsString()
   color: string;
-
+  
   @ApiProperty({
     example: 'Размер',
     description: '',
     required: true,
   })
+  @IsNumber()
   size: number;
-
+  
   @ApiProperty({
     example: 'UUID категории',
     description: 'например, 550e8400-e29b-41d4-a716-446655440000',
     required: true,
   })
+  @IsString()
   categoryId: string;
 
   @ApiProperty({
@@ -69,6 +63,7 @@ export class CreateExhibitDto {
     description: 'например, 550e8400-e29b-41d4-a716-446655440000',
     required: true,
   })
+  @IsString()
   eraId: string;
 
   @ApiProperty({
@@ -76,6 +71,7 @@ export class CreateExhibitDto {
     description: 'например, 550e8400-e29b-41d4-a716-446655440000',
     required: true,
   })
+  @IsString()
   hallId: string;
 
   @ApiProperty({
@@ -83,6 +79,7 @@ export class CreateExhibitDto {
     description: 'например, 550e8400-e29b-41d4-a716-446655440000',
     required: true,
   })
+  @IsString()
   manufactorerId: string;
 
   @ApiProperty({
@@ -90,6 +87,7 @@ export class CreateExhibitDto {
     description: '',
     required: true,
   })
+  @IsNumber()
   x: number;
 
   @ApiProperty({
@@ -97,6 +95,7 @@ export class CreateExhibitDto {
     description: '',
     required: true,
   })
+  @IsNumber()
   y: number;
 
   @ApiProperty({
@@ -104,5 +103,6 @@ export class CreateExhibitDto {
     description: '',
     required: true,
   })
+  @IsNumber()
   z: number;
 }

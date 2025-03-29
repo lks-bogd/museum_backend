@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateHallDto } from './dto/create-hall.dto';
 import { UpdateHallDto } from './dto/update-hall.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -11,6 +11,32 @@ export class HallService {
       data: dto,
     });
   };
+
+  attachModelToHall = async(hallId: string, filePath: string) => {
+    if (!hallId) {
+      throw new BadRequestException('Нужен ID зала')
+    }
+
+    return await this.prisma.hall.update({
+      where: {id: hallId},
+      data: {
+        modelUrl: filePath
+      }
+    })
+  }
+
+  attachImageToHall = async(hallId: string, filePath: string) => {
+    if (!hallId) {
+      throw new BadRequestException('Нужен ID зала')
+    }
+
+    return await this.prisma.hall.update({
+      where: {id: hallId},
+      data: {
+        imageUrl: filePath
+      }
+    })
+  }
 
   findAll = async (skip: number = 0, take: number = 10) => {
     return await this.prisma.hall.findMany({

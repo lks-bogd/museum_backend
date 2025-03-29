@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsString } from 'class-validator';
 
 export class CreateHallDto {
   @ApiProperty({
@@ -6,6 +7,7 @@ export class CreateHallDto {
     description: 'Название зала',
     required: true,
   })
+  @IsString()
   name: string;
 
   @ApiProperty({
@@ -13,6 +15,7 @@ export class CreateHallDto {
     description: 'Описание зала',
     required: false,
   })
+  @IsString()
   description?: string;
 
   @ApiProperty({
@@ -20,19 +23,6 @@ export class CreateHallDto {
     description: 'Какая-то категория',
     required: true,
   })
+  @IsString()
   category: string;
-
-  @ApiProperty({
-    example: 'Картинка',
-    description: 'Ссылка на картинку',
-    required: false,
-  })
-  imageUrl?: string;
-
-  @ApiProperty({
-    example: 'Модель',
-    description: 'Ссылка на модель',
-    required: false,
-  })
-  modelUrl?: string;
 }
