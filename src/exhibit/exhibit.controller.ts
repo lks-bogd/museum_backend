@@ -20,10 +20,11 @@ import {
   ApiParam,
   ApiQuery,
   ApiBody,
+  ApiConsumes,
 } from '@nestjs/swagger';
 import { ExhibitDto } from './dto/exhibit.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import {diskStorage} from 'multer'
+import { diskStorage } from 'multer';
 import { extname } from 'path';
 
 @ApiTags('Экспонаты')
@@ -41,28 +42,78 @@ export class ExhibitController {
 
   @Post('/upload-model')
   @ApiOperation({ summary: 'Загрузить модель экспоната' })
-  @UseInterceptors(FileInterceptor('file', {storage: diskStorage({
-    destination: './uploads/exhibits/models',
-    filename: (req, file, callback) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      callback(null, file.fieldname + '-' + uniqueSuffix + extname(file.originalname))
-    }
-  })}))
-  async uploadModel(@UploadedFile() file: Express.Multer.File, @Query('exhibitId') exhibitId: string) {
-    return await this.exhibitService.attachModelToExhibit(exhibitId, file.path)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary', // Формат файла
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'Модель успешно загружена' })
+  @ApiResponse({ status: 400, description: 'Некорректные данные' })
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads/exhibits/models',
+        filename: (req, file, callback) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          callback(
+            null,
+            file.fieldname + '-' + uniqueSuffix + extname(file.originalname),
+          );
+        },
+      }),
+    }),
+  )
+  async uploadModel(
+    @UploadedFile() file: Express.Multer.File,
+    @Query('exhibitId') exhibitId: string,
+  ) {
+    return await this.exhibitService.attachModelToExhibit(exhibitId, file.path);
   }
 
   @Post('/upload-image')
   @ApiOperation({ summary: 'Загрузить картинку экспоната' })
-  @UseInterceptors(FileInterceptor('file', {storage: diskStorage({
-    destination: './uploads/exhibits/images',
-    filename: (req, file, callback) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      callback(null, file.fieldname + '-' + uniqueSuffix + extname(file.originalname))
-    }
-  })}))
-  async uploadImage(@UploadedFile() file: Express.Multer.File, @Query('exhibitId') exhibitId: string) {
-    return await this.exhibitService.attachImageToExhibit(exhibitId, file.path)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary', // Формат файла
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'Картинка успешно загружена' })
+  @ApiResponse({ status: 400, description: 'Некорректные данные' })
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads/exhibits/images',
+        filename: (req, file, callback) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          callback(
+            null,
+            file.fieldname + '-' + uniqueSuffix + extname(file.originalname),
+          );
+        },
+      }),
+    }),
+  )
+  async uploadImage(
+    @UploadedFile() file: Express.Multer.File,
+    @Query('exhibitId') exhibitId: string,
+  ) {
+    return await this.exhibitService.attachImageToExhibit(exhibitId, file.path);
   }
 
   @Get()
